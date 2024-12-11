@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Poker {
     //初始化牌
@@ -35,10 +32,10 @@ public class Poker {
         Collections.shuffle(list);
         //发牌
         //三个玩家和一个lord
-        ArrayList<Integer> lord = new ArrayList<>();
-        ArrayList<Integer> gamer1 = new ArrayList<>();
-        ArrayList<Integer> gamer2 = new ArrayList<>();
-        ArrayList<Integer> gamer3 = new ArrayList<>();
+        TreeSet<Integer> lord = new TreeSet<>();
+        TreeSet<Integer> gamer1 = new TreeSet<>();
+        TreeSet<Integer> gamer2 = new TreeSet<>();
+        TreeSet<Integer> gamer3 = new TreeSet<>();
         for (int i = 0; i < list.size(); i++) {
             if (i <= 2) {
                 lord.add(list.get(i));
@@ -56,7 +53,7 @@ public class Poker {
         lookPoker("gamer2", gamer2);
         lookPoker("gamer3", gamer3);
     }
-    private void lookPoker(String name, List<Integer> list) {
+    private void lookPoker(String name, TreeSet<Integer> list) {
         System.out.print(name + ":");
         for (int i : list) {
             System.out.print(deck.get(i));
