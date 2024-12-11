@@ -1,6 +1,9 @@
+package joker1;
+
+import java.awt.*;
 import java.util.*;
 
-public class Poker {
+public class Poker extends Component {
     //初始化牌
     //花色："♦", "♣", "♥", "♠"
     //牌面大小："3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A" "2" "小王" "大王"
