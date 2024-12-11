@@ -1,59 +1,66 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class Poker {
     //初始化牌
-    //"3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A" "2"
-    static List<String> list = new ArrayList<>();
+    //花色："♦", "♣", "♥", "♠"
+    //牌面大小："3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A" "2" "小王" "大王"
+    //用于比较大小的牌库，因为不用排序所以使用HashMap
+    static HashMap<Integer, String> deck = new HashMap<>();
+    //用于打乱的牌库,根据索引来从deck中获取牌
+    static ArrayList<Integer> list = new ArrayList<>();
     static {
-        String[] arr = new String[]{"♠", "♥", "♦", "♣"};
+        String[] arr = new String[]{"♦", "♣", "♥", "♠"};
         String[] arr2 = new String[]{"3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2"};
-
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr2.length; j++) {
-                list.add(arr[i] + arr2[j]);
+        int number = 0;
+        for (String s : arr2) {
+            for (String string : arr) {
+                String temp = s + string;
+                list.add(number);
+                deck.put(number, temp);
+                number++;
             }
         }
-        list.add("大王");
-        list.add("小王");
+        list.add(number);
+        deck.put(number, "小王");
+        number++;
+        list.add(number);
+        deck.put(number, "大王");
     }
 
     public Poker() {
-        //洗牌
+        //洗牌,打乱牌序
         Collections.shuffle(list);
-
         //发牌
-        List<String> lord = new ArrayList<>();
-        List<String> gamer1 = new ArrayList<>();
-        List<String> gamer2 = new ArrayList<>();
-        List<String> gamer3 = new ArrayList<>();
-
-        int count = list.size();
-        for (int i = 0; i < count; i++) {
+        //三个玩家和一个lord
+        ArrayList<Integer> lord = new ArrayList<>();
+        ArrayList<Integer> gamer1 = new ArrayList<>();
+        ArrayList<Integer> gamer2 = new ArrayList<>();
+        ArrayList<Integer> gamer3 = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
             if (i <= 2) {
                 lord.add(list.get(i));
-            } else if ((i + 1) % 3 == 1) {
+            } else if (i % 3 == 0) {
                 gamer1.add(list.get(i));
-            } else if ((i + 1) % 3 == 2) {
+            } else if (i % 3 == 1) {
                 gamer2.add(list.get(i));
-            } else if ((i + 1) % 3 == 0) {
+            } else {
                 gamer3.add(list.get(i));
             }
         }
-
         //看牌
-        System.out.println("lord:" + loojPoker(lord));
-        System.out.println("gamer1:" + loojPoker(gamer1));
-        System.out.println("gamer2:" + loojPoker(gamer2));
-        System.out.println("gamer3:" + loojPoker(gamer3));
+        lookPoker("lord", lord);
+        lookPoker("gamer1", gamer1);
+        lookPoker("gamer2", gamer2);
+        lookPoker("gamer3", gamer3);
     }
-
-    private String loojPoker(List<String> gamer) {
-        StringBuilder sb = new StringBuilder();
-        for (String s : gamer) {
-            sb.append(s);
+    private void lookPoker(String name, List<Integer> list) {
+        System.out.print(name + ":");
+        for (int i : list) {
+            System.out.print(deck.get(i));
         }
-        return sb.toString();
+        System.out.println();
     }
 }
