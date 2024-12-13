@@ -12,23 +12,23 @@ import java.util.Comparator;
 
 public class GameJFrame extends JFrame implements ActionListener {
 
-   
+    //统一获取界面中的隐藏容器
     public static Container container = null;
- 
+    //管理抢地主和不抢地主两个按钮
     JButton[] landlord = new JButton[2];
-
+    //管理出牌和不出牌两个按钮
     JButton[] publishCard = new JButton[2];
-
+    //游戏界面中的地主图标
     JLabel dizhu;
-
+    //每个集合中装着对应选手出的牌
     ArrayList<ArrayList<Poker>> currentList = new ArrayList<>();
-
+    //每个小集合中装着每一个玩家当前要出的牌 1索引为玩家自身其余为人机
     ArrayList<ArrayList<Poker>> playerList = new ArrayList<>();
-
+    //底牌
     ArrayList<Poker> lordList = new ArrayList<>();
-
+    //牌盒
     ArrayList<Poker> pokerList = new ArrayList();
-
+    //三个文本提示，记录时间
     JTextField time[] = new JTextField[3];
 
     public GameJFrame() {
@@ -52,18 +52,118 @@ public class GameJFrame extends JFrame implements ActionListener {
 
     //初始化牌（准备牌，洗牌，发牌，排序）
     public void initCard() {
-		//自己练习
+		//先准备牌
+        for (int i = 1; i < 6; i++) {
+            for (int j = 1; j < 14; j++) {
+                if (i < 5 || (i == 5 && j < 3)) {
+                    String name = i + "-" + j;
+                    Poker poker = new Poker(name, false);//牌盒中的牌应该是看不到的，所以显示背面用false
+                    poker.setLocation(350, 150);
+                    pokerList.add(poker);//将新建Poker加入到pokerList集合中
+                    container.add(poker);//将Poker加到容器中
+                } else {
+                    break;
+                }
+            }
+        }
+        //洗牌
+        Collections.shuffle(pokerList);
 
+        //三个玩家
+        ArrayList<Poker> gamer1 = new ArrayList<>();
+        ArrayList<Poker> gamer2 = new ArrayList<>();
+        ArrayList<Poker> gamer3 = new ArrayList<>();
+        //将玩家纳入玩家集合中方便管理
+        playerList.add(gamer1);
+        playerList.add(gamer2);
+        playerList.add(gamer3);
+
+        //发牌
+        for (int i = 0; i < pokerList.size(); i++) {
+            Poker poker = pokerList.get(i);
+            if (i <= 2) {//前三张牌发给地主
+                lordList.add(poker);
+                Common.move(poker, poker.getLocation(), new Point(270 + (75 * i), 10));
+                continue;
+            }
+            if (i % 3 == 0) {//然后依次给三位玩家发牌
+                gamer1.add(poker);
+                Common.move(poker, poker.getLocation(), new Point(50,60 + i * 5));
+            } else if (i % 3 == 1) {//玩家本人
+                //将牌变为正面
+                poker.setUp(true);
+                poker.rearOrFront();
+
+                Common.move(poker, poker.getLocation(), new Point(180 + i * 7, 450));
+                gamer2.add(poker);
+            } else {
+                Common.move(poker, poker.getLocation(), new Point(700,60 + i * 5));
+                gamer3.add(poker);
+            }
+            //把当前牌置于最顶端
+            container.setComponentZOrder(poker, 0);
+        }
+
+
+        //最后给每个玩家的手牌排序
+        for (int i = 0; i < playerList.size(); i++) {
+            order(playerList.get(i));
+            Common.rePosition(this, playerList.get(i), i);
+        }
     }
 
     //排序
     public void order(ArrayList<Poker> list) {
-        //自己练习
+        Collections.sort(list, new Comparator<Poker>() {//排序的逻辑就是先比较大小，再比较花色
+            @Override
+            public int compare(Poker o1, Poker o2) {
+                int o1Value = getValue(o1);
+                int o1colour = Integer.parseInt(o1.getName().substring(0, 1));
+                int o2Value = getValue(o2);
+                int o2colour = Integer.parseInt(o2.getName().substring(0, 1));
+                int result = o2Value - o1Value;
+                result = result == 0 ? (o2colour - o1colour) : (o1Value - o2Value);
+                return result;
+            }
+        });
     }
 
     //获取每一张牌的价值
-    public void getValue(Poker poker) {
-       //自己练习
+    //获取每一张牌的价值
+    public int getValue(Poker poker) {
+        //获取牌的名字 1-1
+        String name = poker.getName();
+        //获取牌的花色
+        int color = Integer.parseInt(poker.getName().substring(0, 1));
+        //获取牌对应的数字,同时也是牌的价值
+        int value = Integer.parseInt(name.substring(2));
+
+        //在本地文件中，每张牌的文件名为：数字1-数字2
+        //数字1表示花色，数字2表示牌的数字
+        //其中3~K对应的数字2，可以视为牌的价值
+        //所以，我们单独判断大小王，A，2即可
+
+        //计算大小王牌的价值
+        if (color == 5){
+            //小王的初始价值为1，在1的基础上加100，小王价值为：101
+            //大王的初始价值为2，在2的基础上加100，大王价值为：102
+            return value += 100;
+        }
+
+        //计算A的价值
+        if (value == 1){
+            //A的初始价值为1，在1的基础上加20，大王价值为：21
+            return value += 20;
+        }
+
+        //计算2的价值
+        if (value == 2){
+            //2的初始价值为2，在2的基础上加30，大王价值为：32
+            return value += 30;
+        }
+
+        //如果不是大小王，不是A，不是2，牌的价值就是牌对应的数字
+        return value;
     }
 
 

@@ -20,15 +20,20 @@ public class Poker extends JLabel implements MouseListener {
     public Poker(String name, boolean up) {
         this.name = name;
         this.up = up;
+        //判断是正面还是背面
+        rearOrFront();
 
+        this.setSize(71, 96);
+        this.setVisible(true);
+        this.addMouseListener(this);
+    }
+
+    public void rearOrFront() {
         if (up) {
             turnFront();//显示卡牌正面
         } else {
             turnRear();//显示卡牌背面
         }
-        this.setSize(71, 96);
-        this.setVisible(true);
-        this.addMouseListener(this);
     }
 
     private void turnRear() {
@@ -39,6 +44,14 @@ public class Poker extends JLabel implements MouseListener {
     private void turnFront() {
         this.setIcon(new ImageIcon("image/poker/"+ name +".png"));
         this.canclick = true;//显示正面的方法可执行点击操作
+    }
+
+    public boolean isUp() {
+        return up;
+    }
+
+    public void setUp(boolean up) {
+        this.up = up;
     }
 
     @Override
@@ -64,6 +77,17 @@ public class Poker extends JLabel implements MouseListener {
     public void mouseReleased(MouseEvent e) {
 
     }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public void mouseEntered(MouseEvent e) {
 
